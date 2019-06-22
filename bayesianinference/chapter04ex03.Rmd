@@ -1,0 +1,115 @@
+---
+title: "Lista 4"
+output:
+  html_document:
+    df_print: paged
+  word_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## 3 Comparing two proportions
+
+3. Comparing two proportions
+The following table gives the records of accidents in 1998 compiled by the Department of Highway Safety and Motor Vehicles in Florida.
+
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;}
+.tg td{font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;}
+.tg th{font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;}
+.tg .tg-0pky{border-color:inherit;text-align:left;vertical-align:top}
+</style>
+<table class="tg">
+  <tr>
+    <th class="tg-0pky"></th>
+    <th class="tg-0pky" colspan="2">Injury</th>
+  </tr>
+  <tr>
+    <th class="tg-0pky">Safety</th>
+    <th class="tg-0pky">Fatal</th>
+    <th class="tg-0pky">Nonfatal</th>
+  </tr>
+  <tr>
+    <td class="tg-0pky">None</td>
+    <td class="tg-0pky">1601</td>
+    <td class="tg-0pky">162,527</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">Seat Belt</td>
+    <td class="tg-0pky">510</td>
+    <td class="tg-0pky">412,368</td>
+  </tr>
+</table>
+
+Denote the number of accidents and fatalities when no safety equipment
+was in use by nN and yN, respectively. Similarly, let nS and yS denote the
+number of accidents and fatalities when a seat belt was in use. Assume
+that yN and yS are independent with yN distributed as binomial(nN, pN)
+and yS distributed as binomial(nS, pS). Assume a uniform prior is placed
+on the vector of probabilities (pN, pS).
+a) Show that pN and pS have independent beta posterior distributions.
+
+
+```{r warning=FALSE, message=FALSE}
+library(BayesianFirstAid)
+fatal<-c(1601,510)
+total<-c(1601+162527,510+412368)
+
+fit<-bayes.prop.test(fatal,total)
+plot(fit)
+
+
+
+
+```
+
+
+b) Use the function rbeta to simulate 1000 values from the joint posterior
+distribution of (pN, pS).
+
+
+```{r }
+samples<-as.data.frame(fit)
+head(samples)
+
+samples<-samples[1:1000,1:2]
+
+head(samples)
+
+```
+c) Using your sample, construct a histogram of the relative risk pN/pS.
+Find a 95% interval estimate of this relative risk.
+
+```{r }
+
+samples$risk<-samples$theta1/samples$theta2
+
+hist(samples$risk)
+
+library(gmodels)
+ci(samples$risk,conf.level = 0.95)
+
+
+```
+
+
+d) Construct a histogram of the difference in risks pN − pS.
+
+```{r }
+
+samples$diff<-samples$theta1-samples$theta2
+
+hist(samples$diff)
+
+```
+
+e) Compute the posterior probability that the difference in risks exceeds
+0.
+
+```{r echo=FALSE}
+
+
+
